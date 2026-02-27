@@ -141,6 +141,7 @@ CREATE TRIGGER on_auth_user_created
 -- =============================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.user_status;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
 
 -- =============================================================
 -- STORAGE BUCKET

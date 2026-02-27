@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { MessageCircle } from 'lucide-react';
@@ -8,6 +8,15 @@ import { MessageCircle } from 'lucide-react';
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Fallback timeout: if loading takes more than 3 seconds, redirect to login
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setTimedOut(true);
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     if (!loading) {
@@ -16,8 +25,11 @@ export default function Home() {
       } else {
         router.push('/login');
       }
+    } else if (timedOut) {
+      // Auth took too long, redirect to login
+      router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, timedOut]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628]">

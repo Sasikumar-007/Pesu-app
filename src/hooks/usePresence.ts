@@ -3,6 +3,8 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://maynrffyeyyklaxyliuo.supabase.co';
+
 export function usePresence(userId: string | null) {
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -41,7 +43,7 @@ export function usePresence(userId: string | null) {
         // Handle before unload
         const handleBeforeUnload = () => {
             // Use sendBeacon for reliable offline status update
-            const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/user_status?user_id=eq.${userId}`;
+            const url = `${SUPABASE_URL}/rest/v1/user_status?user_id=eq.${userId}`;
             const body = JSON.stringify({ is_online: false, last_seen: new Date().toISOString() });
             navigator.sendBeacon(
                 url,

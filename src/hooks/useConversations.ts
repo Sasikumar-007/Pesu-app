@@ -208,10 +208,15 @@ export function useConversations(userId: string | null) {
             }
 
             // Add both participants
-            await supabase.from('conversation_participants').insert([
+            const { error: partError } = await supabase.from('conversation_participants').insert([
                 { conversation_id: newConvId, user_id: userId },
                 { conversation_id: newConvId, user_id: otherUserId },
             ]);
+
+            if (partError) {
+                console.error("Error adding participants:", partError);
+                return null;
+            }
 
             await fetchConversations();
             return newConvId;

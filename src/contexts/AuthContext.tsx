@@ -79,16 +79,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signOut = async () => {
-        if (user?.id) {
-            try {
-                // Ignore any RLS errors that occur during sign out status updates
-                await supabase.from('user_status').update({ is_online: false, last_seen: new Date().toISOString() }).eq('user_id', user.id);
-            } catch (e) {
-                console.error("Status update error on signout", e);
-            }
+        const currentUserId = user?.id;
+
+        // Clear local state immediately to prevent UI issues
+        setUser(null);
+        setSession(null);
+        setProfile(null);
+
+        // Fire-and-forget: update status without blocking logout
+        if (currentUserId) {
+            void (async () => {
+                try {
+                    await supabase.from('user_status')
+                        .update({ is_online: false, last_seen: new Date().toISOString() })
+                        .eq('user_id', currentUserId);
+                } catch { /* ignore */ }
+            })();
         }
+
         await supabase.auth.signOut();
-        // The onAuthStateChange listener handles updating the state variables
+
+        // Force a full redirect to ensure clean state
+        window.location.href = '/login';
     };
 
     const updateProfile = async (updates: Partial<Profile>) => {

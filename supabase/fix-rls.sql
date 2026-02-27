@@ -33,12 +33,8 @@ CREATE POLICY "conversations_select" ON public.conversations FOR SELECT USING (
 CREATE POLICY "conversations_insert" ON public.conversations FOR INSERT WITH CHECK (true);
 
 -- Recreate Conversation Participants policies
-CREATE POLICY "conv_participants_select" ON public.conversation_participants FOR SELECT USING (
-  user_id = auth.uid() OR EXISTS (
-    SELECT 1 FROM public.conversation_participants cp
-    WHERE cp.conversation_id = conversation_participants.conversation_id AND cp.user_id = auth.uid()
-  )
-);
+CREATE POLICY "conv_participants_select" ON public.conversation_participants 
+  FOR SELECT USING (true);
 CREATE POLICY "conv_participants_insert" ON public.conversation_participants FOR INSERT WITH CHECK (true);
 
 -- Recreate Messages policies (THIS IS THE KEY FIX)

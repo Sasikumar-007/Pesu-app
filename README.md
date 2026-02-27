@@ -30,7 +30,7 @@
 ### 1. Clone & Install
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Sasikumar-007/Pesu-app.git
 cd pesu-app
 npm install
 ```

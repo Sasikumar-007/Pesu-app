@@ -68,13 +68,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signUp = async (email: string, password: string, fullName: string) => {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
                 data: { full_name: fullName },
             },
         });
+
+        if (!error && data.user) {
+            // Ensure profile exists (fallback if trigger doesn't fire)
+            await supabase.from('profiles').upsert({
+                id: data.user.id,
+                full_name: fullName,
+            }, { onConflict: 'id' });
+
+            // Ensure user_status exists
+            await supabase.from('user_status').upsert({
+                user_id: data.user.id,
+                is_online: true,
+                last_seen: new Date().toISOString(),
+            }, { onConflict: 'user_id' });
+        }
+
         return { error: error?.message ?? null };
     };
 
